@@ -1,0 +1,199 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Stock Sentiment Analysis API",
+    "description": "API for analyzing sentiment of financial text and news articles using FinBERT model. Returns sentiment scores (positive, negative, neutral) for individual texts or aggregated analysis for multiple articles about a stock.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://your-app-url.com",
+      "description": "Production server (replace with your actual deployment URL)"
+    }
+  ],
+  "paths": {
+    "/analyze": {
+      "post": {
+        "summary": "Analyze sentiment of a single financial text",
+        "description": "Analyzes the sentiment of a single piece of financial text and returns sentiment scores for positive, negative, and neutral categories.",
+        "operationId": "analyzeSentiment",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["text"],
+                "properties": {
+                  "text": {
+                    "type": "string",
+                    "description": "The financial text to analyze for sentiment",
+                    "example": "Apple stock is performing well, with strong earnings reported."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful sentiment analysis",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "text": {
+                      "type": "string",
+                      "description": "The analyzed text"
+                    },
+                    "sentiment_scores": {
+                      "type": "object",
+                      "properties": {
+                        "positive": {
+                          "type": "number",
+                          "description": "Positive sentiment score (0-1)"
+                        },
+                        "negative": {
+                          "type": "number",
+                          "description": "Negative sentiment score (0-1)"
+                        },
+                        "neutral": {
+                          "type": "number",
+                          "description": "Neutral sentiment score (0-1)"
+                        }
+                      }
+                    },
+                    "dominant_sentiment": {
+                      "type": "string",
+                      "enum": ["positive", "negative", "neutral"],
+                      "description": "The dominant sentiment category"
+                    },
+                    "confidence": {
+                      "type": "number",
+                      "description": "Confidence score of the dominant sentiment (0-1)"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - missing or invalid text field"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/analyze-stock": {
+      "post": {
+        "summary": "Analyze sentiment for multiple news articles about a stock",
+        "description": "Analyzes the sentiment of multiple news articles related to a stock symbol and returns individual and aggregate sentiment scores.",
+        "operationId": "analyzeStockSentiment",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["news_articles"],
+                "properties": {
+                  "symbol": {
+                    "type": "string",
+                    "description": "The stock symbol (e.g., AAPL, TSLA, MSFT)",
+                    "example": "AAPL"
+                  },
+                  "news_articles": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "Array of news article texts to analyze",
+                    "example": [
+                      "Apple stock is performing well, with strong earnings reported.",
+                      "Concerns about the economy are impacting the market, including tech stocks like Apple."
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful sentiment analysis of stock news",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "symbol": {
+                      "type": "string",
+                      "description": "The stock symbol analyzed"
+                    },
+                    "articles_analyzed": {
+                      "type": "integer",
+                      "description": "Number of articles analyzed"
+                    },
+                    "individual_sentiments": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "positive": {
+                            "type": "number"
+                          },
+                          "negative": {
+                            "type": "number"
+                          },
+                          "neutral": {
+                            "type": "number"
+                          }
+                        }
+                      },
+                      "description": "Sentiment scores for each individual article"
+                    },
+                    "aggregate_sentiment": {
+                      "type": "object",
+                      "properties": {
+                        "positive": {
+                          "type": "number",
+                          "description": "Average positive sentiment across all articles"
+                        },
+                        "negative": {
+                          "type": "number",
+                          "description": "Average negative sentiment across all articles"
+                        },
+                        "neutral": {
+                          "type": "number",
+                          "description": "Average neutral sentiment across all articles"
+                        }
+                      }
+                    },
+                    "overall_sentiment": {
+                      "type": "string",
+                      "enum": ["positive", "negative", "neutral"],
+                      "description": "The overall dominant sentiment across all articles"
+                    },
+                    "confidence": {
+                      "type": "number",
+                      "description": "Confidence score of the overall sentiment (0-1)"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - missing or invalid news_articles field"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    }
+  }
+}
