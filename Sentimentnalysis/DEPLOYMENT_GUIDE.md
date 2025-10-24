@@ -44,6 +44,7 @@
    - Railway will automatically detect it's a Python project
    - It will use the `requirements.txt` file
    - The `app.py` file will be used as the entry point
+   - Configuration files (`railway.toml`, `nixpacks.toml`) are included for proper deployment
 
 4. **Deploy:**
    - Click "Deploy Now"
